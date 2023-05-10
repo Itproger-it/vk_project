@@ -1,0 +1,352 @@
+swagger: '2.0'
+info:
+  title: Friends Service API
+  version: v1
+host: 127.0.0.1:8000
+schemes:
+  - http
+basePath: /api/v1
+consumes:
+  - application/json
+produces:
+  - application/json
+securityDefinitions:
+  Basic:
+    type: basic
+security:
+  - Basic: []
+paths:
+  /add-user/:
+    post:
+      operationId: add-user_create
+      description: Регистрация нового пользователя
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UserPost'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/UserPost'
+      tags:
+        - add-user
+    parameters: []
+  /friend-delete/{api_key}/{friend_id}:
+    delete:
+      operationId: friend-delete_delete
+      description: ''
+      parameters: []
+      responses:
+        '204':
+          description: ''
+        '400':
+          description: |-
+            Неверный api_key
+            Пользователь не находится у вас в друзьях
+            Пользователя с таким id не существует
+        '500':
+          description: Ошибка при обработке
+      tags:
+        - friend-delete
+    parameters:
+      - name: api_key
+        in: path
+        required: true
+        type: string
+      - name: friend_id
+        in: path
+        required: true
+        type: string
+  /friend-request/{api_key}:
+    get:
+      operationId: friend-request_read
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: Запрос успешно выполнен
+        '400':
+          description: Неверный api_key
+        '500':
+          description: Ошибка при обработке
+      tags:
+        - friend-request
+    post:
+      operationId: friend-request_create
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/FriendRequest'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/FriendRequest'
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/Friendship'
+        '400':
+          description: |-
+            Вы пытаетесь отправить заявку самому себе
+            Вы уже являетесь друзьями
+            Заявка в друзья уже отправлена
+            Пользователя с таким id не существует
+        '500':
+          description: Ошибка при обработке
+      tags:
+        - friend-request
+    parameters:
+      - name: api_key
+        in: path
+        required: true
+        type: string
+  /friend-request/{api_key}/{id}/delete:
+    delete:
+      operationId: friend-request_delete_delete
+      description: Удаление отправленной пользователем заявки
+      parameters: []
+      responses:
+        '204':
+          description: ''
+        '400':
+          description: |-
+            Неверный api_key
+            У вас нет запроса с таким id
+            Запроса с таким id не существует
+        '500':
+          description: Ошибка при обработке
+      tags:
+        - friend-request
+    parameters:
+      - name: api_key
+        in: path
+        required: true
+        type: string
+      - name: id
+        in: path
+        required: true
+        type: string
+  /friends-request/{api_key}/{friend_id}/accept:
+    get:
+      operationId: friends-request_accept_list
+      description: Принятие заявки в друзья
+      parameters: []
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/Friendship'
+        '400':
+          description: |-
+            Входящей заявки нет
+            Неверный api_key
+            Пользователя с таким id не существует
+            Вы указали свой id вместо id другого пользователя
+        '500':
+          description: Ошибка при обработке
+      tags:
+        - friends-request
+    parameters:
+      - name: api_key
+        in: path
+        required: true
+        type: string
+      - name: friend_id
+        in: path
+        required: true
+        type: string
+  /friends-request/{api_key}/{friend_id}/reject:
+    get:
+      operationId: friends-request_reject_list
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: Заявка успешно откланена
+        '400':
+          description: |-
+            Входящей заявки нет
+            Неверный api_key
+            Пользователя с таким id не существует
+            Вы указали свой id вместо id другого пользователя
+        '500':
+          description: Ошибка при обработке
+      tags:
+        - friends-request
+    parameters:
+      - name: api_key
+        in: path
+        required: true
+        type: string
+      - name: friend_id
+        in: path
+        required: true
+        type: string
+  /friends-status/{api_key}/{friend_id}:
+    get:
+      operationId: friends-status_read
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: |-
+            Вы являетесь друзьями
+            Исходящая заявка
+            Входящая заявка
+            Нет ничего
+        '400':
+          description: |-
+            Неверный api_key
+            Вы указали свой id
+            Пользователя с таким id не существует
+        '500':
+          description: Ошибка при обработке
+      tags:
+        - friends-status
+    parameters:
+      - name: api_key
+        in: path
+        required: true
+        type: string
+      - name: friend_id
+        in: path
+        required: true
+        type: string
+  /friends/{api_key}:
+    get:
+      operationId: friends_read
+      description: Просмотр всех друзей
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/Friendship'
+        '400':
+          description: Неверный api_key
+        '500':
+          description: Ошибка при обработке
+      tags:
+        - friends
+    parameters:
+      - name: api_key
+        in: path
+        required: true
+        type: string
+  /user-delete/{api_key}:
+    delete:
+      operationId: user-delete_delete
+      description: Удаление своего аккаунта
+      parameters: []
+      responses:
+        '204':
+          description: ''
+        '400':
+          description: Неверный api_key
+        '500':
+          description: Ошибка при обработке
+      tags:
+        - user-delete
+    parameters:
+      - name: api_key
+        in: path
+        required: true
+        type: string
+  /users/:
+    get:
+      operationId: users_list
+      description: Возвращает всех пользователей
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/UserGet'
+      tags:
+        - users
+    parameters: []
+definitions:
+  UserPost:
+    required:
+      - username
+    type: object
+    properties:
+      id:
+        title: ID
+        type: integer
+        readOnly: true
+      username:
+        title: Username
+        type: string
+        maxLength: 30
+        minLength: 1
+      api_key:
+        title: Api key
+        type: string
+        format: uuid
+        readOnly: true
+  FriendRequest:
+    required:
+      - to_user
+    type: object
+    properties:
+      id:
+        title: ID
+        type: integer
+        readOnly: true
+      from_user:
+        title: From user
+        type: integer
+        readOnly: true
+      to_user:
+        title: To user
+        type: integer
+      status:
+        title: Status
+        type: string
+        readOnly: true
+        maxLength: 10
+        minLength: 1
+      created:
+        title: Created
+        type: string
+        format: date-time
+        readOnly: true
+  Friendship:
+    type: object
+    properties:
+      id:
+        title: Id
+        type: integer
+        readOnly: true
+      friend_id:
+        title: Friend id
+        type: integer
+        readOnly: true
+      friend_name:
+        title: Friend name
+        type: integer
+        readOnly: true
+  UserGet:
+    required:
+      - username
+    type: object
+    properties:
+      id:
+        title: ID
+        type: integer
+        readOnly: true
+      username:
+        title: Username
+        type: string
+        maxLength: 30
+        minLength: 1
